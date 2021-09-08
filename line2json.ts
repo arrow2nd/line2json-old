@@ -53,7 +53,7 @@ for (const line of lines) {
     message = splited[3];
   } else if (!timeRegexp.test(line)) {
     // 複数行をまとめる
-    message += `+${line}`;
+    message += ` ${line}`;
   }
 }
 
