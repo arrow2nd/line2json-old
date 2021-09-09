@@ -3,13 +3,14 @@ import { parse } from "https://deno.land/std@0.106.0/flags/mod.ts";
 
 type TalkData = {
   date: string;
+  time: string;
   username: string;
   message: string;
 };
 
 const dateRegexp = /^\d{4}\/\d{1,2}\/\d{1,2}/;
 const timeRegexp = /\d{1,2}:\d{1,2}/;
-const talkRegexp = /(\d{1,2}:\d{1,2})\t(.*)\t(.*)/;
+const talkRegexp = /^(.*\d{1,2}:\d{1,2})\t(.*)\t(.*)/;
 
 const parsedArgs = parse(Deno.args);
 
@@ -39,17 +40,17 @@ for (const line of lines) {
   const splited = line.match(talkRegexp);
 
   if (splited) {
-    // 追加
+    // メッセージが有効なら追加
     if (isMessage(message)) {
       results.push({
-        date: `${date} ${time}`,
+        date,
+        time,
         username,
         message,
       });
     }
 
     time = splited[1];
-
     username = splited[2];
     message = splited[3];
   } else if (!timeRegexp.test(line)) {
@@ -82,12 +83,4 @@ function isMessage(text: string) {
   }
 
   return true;
-}
-
-function convTime(time: string) {
-  // if (/^午[前後]/.test(time)) {
-  //   time =
-  // }
-
-  return time;
 }
