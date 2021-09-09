@@ -8,8 +8,8 @@ type TalkData = {
 };
 
 const dateRegexp = /^\d{4}\/\d{1,2}\/\d{1,2}/;
-const timeRegexp = /^\d{1,2}:\d{1,2}/;
-const talkRegexp = /^(\d{1,2}:\d{1,2})\t(.*)\t(.*)/;
+const timeRegexp = /\d{1,2}:\d{1,2}/;
+const talkRegexp = /(\d{1,2}:\d{1,2})\t(.*)\t(.*)/;
 
 const parsedArgs = parse(Deno.args);
 
@@ -21,7 +21,7 @@ const lines = Deno.readTextFileSync(path)
   .split("\n")
   .slice(2)
   .filter((e) => e !== "")
-  .map((e) => e.replace(/[\r\n]/, ""));
+  .map((e) => e.replace(/[\r\n]|\(emoji\)/g, ""));
 
 let date = "";
 let time = "";
@@ -40,7 +40,7 @@ for (const line of lines) {
 
   if (splited) {
     // 追加
-    if (message !== "" && isMessage(message)) {
+    if (isMessage(message)) {
       results.push({
         date: `${date} ${time}`,
         username,
@@ -49,6 +49,7 @@ for (const line of lines) {
     }
 
     time = splited[1];
+
     username = splited[2];
     message = splited[3];
   } else if (!timeRegexp.test(line)) {
@@ -63,10 +64,14 @@ Deno.writeTextFileSync(
 );
 
 function isMessage(text: string) {
+  text = text.trim();
+  if (text === "") return false;
+
   const ignoreList = [
     /^\[写真\]/,
     /^\[動画\]/,
     /^\[スタンプ\]/,
+    /^\[ファイル\]/,
     /^\[イベント/,
     /^\[ボイスメッセージ\]/,
     /^通話時間 d{1,2},d{1,2}/,
@@ -77,4 +82,12 @@ function isMessage(text: string) {
   }
 
   return true;
+}
+
+function convTime(time: string) {
+  // if (/^午[前後]/.test(time)) {
+  //   time =
+  // }
+
+  return time;
 }
