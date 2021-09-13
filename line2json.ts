@@ -22,7 +22,7 @@ const lines = Deno.readTextFileSync(path)
   .split("\n")
   .slice(2)
   .filter((e) => e !== "")
-  .map((e) => e.replace(/[\r\n]|\(emoji\)/g, ""));
+  .map((e) => e.replace(/[\r\n]|\(emoji\)/g, "").trim());
 
 let date = "";
 let time = "";
@@ -50,9 +50,9 @@ for (const line of lines) {
       });
     }
 
-    time = splited[1];
-    username = splited[2];
-    message = splited[3];
+    time = splited[1].trim();
+    username = splited[2].trim();
+    message = splited[3].trim();
   } else if (!timeRegexp.test(line)) {
     // 複数行をまとめる
     message += ` ${line}`;
@@ -76,6 +76,7 @@ function isMessage(text: string) {
     /^\[イベント/,
     /^\[ボイスメッセージ\]/,
     /^通話時間 d{1,2},d{1,2}/,
+    /.*を作成しました$/,
   ];
 
   for (const ignore of ignoreList) {
