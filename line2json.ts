@@ -51,7 +51,7 @@ for (const line of lines) {
     }
 
     time = splited[1].trim();
-    username = splited[2].trim();
+    username = splited[2].replace(/\t.*$/g, "").trim(); // 引用元の名前を削除
     message = splited[3].trim();
   } else if (!timeRegexp.test(line)) {
     // 複数行をまとめる
